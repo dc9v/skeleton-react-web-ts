@@ -1,46 +1,103 @@
-# Getting Started with Create React App
+# skeleton-react-web-ts
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+이 코드는 리액트 웹앱 Skeleton code 입니다.
 
-## Available Scripts
+주요 라이브러리는 아래와 같습니다.
 
-In the project directory, you can run:
+- React
+- React router dom
+- Webpack 
+- Babel 
+- TypeScript 
+- babel-plugin-module-resolver
 
-### `npm start`
+## 시작하기
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+npm run dev
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 주요 설정
 
-### `npm test`
+### 1. tsconfig.json (paths)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+tsconfig.json 의 path alias가 작동되도록 설정했습니다.
 
-### `npm run build`
+*`tsconfig.json`*
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```json
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "/src/*": [
+        "./src/*"
+      ]
+    },
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+*`babel.config.json`*
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```json
+"plugins": [
+    [
+      "module-resolver",
+      {
+        "root": [
+          "."
+        ],
+        "extension": [
+          ".js",
+          ".ts",
+          ".tsx"
+        ],
+        "alias": {
+          "/src": "./src"
+        }
+      }
+    ]
+  ]
+```
 
-### `npm run eject`
+### 2. URI Path variables
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+`https://[domain]/:path` 또는 `https://[domain]/*` 과 같은 Path variables 설정을 해두었습니다
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+*`index.tsx`*
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```tsx
+root.render(
+  <React.StrictMode>
+    <BrowserRouter basename="/">
+      <Routes>
+        <Route path="" element={<div>HelloWorld</div>} />
+        <Route path="/test" element={<TestRoute />} />
+        <Route path="/param/:param" element={<ParamRoute />} />
+        <Route path="/wildcard/*" element={<WildcardRoute />} />
+      </Routes>
+    </BrowserRouter>
+  </React.StrictMode>
+);
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+*`ParamRoute.tsx`*
 
-## Learn More
+```tsx
+const ParamRoute = () =>
+{
+  const { param } = useParams();
+  return (<div>parameter {param}</div>);
+};
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+*`WildcardRoute.tsx`*
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```tsx
+const WildcardRoute = () =>
+{
+  const param = useParams()["*"]?.split("/") ?? [];
+
+  console.log(param);
+  
+  return (<div>parameter {param}</div>);
+};
+```
